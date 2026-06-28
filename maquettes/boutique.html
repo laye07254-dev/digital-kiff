@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Digital Kiff - Boutique</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=Montserrat:wght@700;800;900&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-high": "#2a2a2a",
+                        "on-secondary-fixed": "#1a1c1c",
+                        "on-surface": "#e5e2e1",
+                        "surface": "#131313",
+                        "on-secondary": "#2f3131",
+                        "tertiary-fixed-dim": "#c8c6c5",
+                        "tertiary-container": "#929090",
+                        "on-tertiary-container": "#2a2a2a",
+                        "on-secondary-container": "#b4b5b5",
+                        "outline-variant": "#5c4037",
+                        "surface-container": "#201f1f",
+                        "tertiary-fixed": "#e5e2e1",
+                        "on-error-container": "#ffdad6",
+                        "on-tertiary-fixed": "#1c1b1b",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-primary": "#5e1700",
+                        "inverse-primary": "#ae3200",
+                        "error-container": "#93000a",
+                        "secondary-container": "#454747",
+                        "primary-container": "#ff571a",
+                        "surface-container-highest": "#353534",
+                        "primary-fixed-dim": "#ffb59e",
+                        "inverse-surface": "#e5e2e1",
+                        "on-tertiary": "#313030",
+                        "on-primary-container": "#521300",
+                        "primary": "#ffb59e",
+                        "error": "#ffb4ab",
+                        "surface-tint": "#ffb59e",
+                        "surface-container-low": "#1c1b1b",
+                        "secondary": "#c6c6c7",
+                        "secondary-fixed-dim": "#c6c6c7",
+                        "surface-bright": "#3a3939",
+                        "surface-dim": "#131313",
+                        "on-secondary-fixed-variant": "#454747",
+                        "tertiary": "#c8c6c5",
+                        "background": "#131313",
+                        "on-background": "#e5e2e1",
+                        "secondary-fixed": "#e2e2e2",
+                        "outline": "#ad897e",
+                        "on-tertiary-fixed-variant": "#474746",
+                        "inverse-on-surface": "#313030",
+                        "surface-variant": "#353534",
+                        "on-surface-variant": "#e6beb2",
+                        "on-primary-fixed-variant": "#852400",
+                        "primary-fixed": "#ffdbd0",
+                        "on-error": "#690005",
+                        "on-primary-fixed": "#3a0b00"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "24px",
+                        "unit": "8px",
+                        "margin-desktop": "64px",
+                        "gutter": "32px",
+                        "container-max": "1440px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Montserrat"],
+                        "label-sm": ["Inter"],
+                        "display-2xl": ["Montserrat"],
+                        "body-md": ["Inter"],
+                        "display-lg-mobile": ["Montserrat"],
+                        "display-lg": ["Montserrat"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "600" }],
+                        "display-2xl": ["96px", { "lineHeight": "100px", "letterSpacing": "-0.04em", "fontWeight": "800" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "letterSpacing": "0", "fontWeight": "400" }],
+                        "display-lg-mobile": ["40px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "display-lg": ["64px", { "lineHeight": "72px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "letterSpacing": "0", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface-container-lowest text-on-surface font-body-md antialiased min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<nav class="bg-surface dark:bg-surface border-b border-on-secondary dark:border-on-secondary sticky top-0 z-50 w-full flat no shadows">
+<div class="flex justify-between items-center px-margin-desktop py-unit w-full max-w-container-max mx-auto">
+<!-- Brand -->
+<a class="font-display-lg text-display-lg font-black text-primary dark:text-primary tracking-tighter" href="#">
+                DIGITAL KIFF
+            </a>
+<!-- Navigation Links -->
+<ul class="hidden md:flex gap-gutter font-headline-md text-headline-md font-body-md text-body-md">
+<li class="">
+<a class="text-primary dark:text-primary border-b-2 border-primary hover:text-primary dark:hover:text-primary transition-colors duration-200 block py-2" href="#">Boutique</a>
+</li>
+<li class="">
+<a class="text-on-surface dark:text-on-surface hover:text-primary dark:hover:text-primary transition-colors duration-200 block py-2" href="#">Contact</a>
+</li></ul>
+<!-- Trailing Icons -->
+<div class="flex items-center gap-4 text-primary dark:text-primary">
+<button class="hover:text-primary dark:hover:text-primary transition-colors duration-200 active:scale-95 duration-100 flex items-center justify-center p-2">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+</button>
+</div>
+</div>
+</nav>
+<!-- TopAppBar (Sub-header) -->
+<header class="bg-surface dark:bg-surface relative full-width border-b border-on-secondary dark:border-on-secondary flat no shadows">
+<div class="flex flex-col gap-gutter px-margin-desktop py-12 w-full max-w-container-max mx-auto">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary dark:text-primary text-3xl" data-icon="menu">menu</span>
+<h1 class="font-display-lg text-display-lg text-on-surface m-0 uppercase tracking-tighter">BOUTIQUE</h1>
+</div>
+<nav class="font-headline-md text-headline-md font-label-sm text-label-sm mt-4">
+<ul class="flex flex-wrap gap-8">
+<li class="">
+<a class="text-on-surface dark:text-on-surface font-bold border-b-2 border-primary pb-2 hover:text-on-surface dark:hover:text-on-surface transition-all duration-300 uppercase" href="#">Tout</a>
+</li>
+<li class="">
+<a class="text-tertiary-container dark:text-tertiary-container pb-2 hover:text-on-surface dark:hover:text-on-surface transition-all duration-300 uppercase" href="#">Vestes</a>
+</li>
+<li class="">
+<a class="text-tertiary-container dark:text-tertiary-container pb-2 hover:text-on-surface dark:hover:text-on-surface transition-all duration-300 uppercase" href="#">T-shirts</a>
+</li>
+<li class="">
+<a class="text-tertiary-container dark:text-tertiary-container pb-2 hover:text-on-surface dark:hover:text-on-surface transition-all duration-300 uppercase" href="#">Accessoires</a>
+</li>
+</ul>
+</nav>
+</div>
+</header>
+<!-- Main Catalog Canvas -->
+<main class="flex-grow w-full max-w-container-max mx-auto px-margin-desktop py-24">
+<!-- Grid Layout: 4 Columns -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<!-- Product Card 1 -->
+<article class="flex flex-col border border-surface-container-highest bg-surface hover:border-on-secondary transition-colors duration-300 group">
+<div class="relative w-full aspect-[3/4] bg-surface-container overflow-hidden">
+<img alt="Veste Structure 01" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="A stark, minimalist fashion photography shot of a structured, brutalist-inspired jacket. The jacket is presented on a purely white, shadowless background to emphasize its sharp geometric lines and heavy texture. The lighting is harsh and high-contrast, stripping away any softness. The garment itself is a deep matte black, punctuated by a single, thin line of vivid electric orange stitching. The overall mood is avant-garde, structural, and fiercely modern, evoking a sense of industrial premium design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6TWHxClh__sEvRsTHdbh1cMsqJaapstLQim1k1bIesJzqx0wltHCMjF-_1mZOTbwneVLlY74ML4IqrSLyhobPsRYaGNI8OROtzdxL6nYQKOd6oPobhvTvzmVE_IrUPFI12mhUXVodNfvta4yLeZS_ETFqtr9WSkOx3VV-HDn46rHL0JOWmI4VuGLSDFcQ8L1EnZF9YLW7wB43VzYCSHPUYk-q7BQi0nxloMpAfycMdf2UPiLvdfdyBhxTrZETzFkigzPrzStby05u"/>
+</div>
+<div class="p-6 flex flex-col flex-grow justify-between gap-6 border-t border-surface-container-highest">
+<div>
+<h2 class="font-body-lg text-body-lg text-on-surface uppercase tracking-wide">Veste Structure 01</h2>
+<p class="font-headline-md text-headline-md text-primary-container mt-2">120 €</p>
+</div>
+<div class="flex flex-col gap-3">
+<button class="w-full border-2 border-on-surface text-on-surface bg-transparent font-label-sm text-label-sm py-3 px-4 uppercase tracking-widest hover:bg-on-surface hover:text-surface transition-colors duration-200">
+                            + Panier
+                        </button>
+<button class="w-full border-2 border-primary-container bg-primary-container text-on-primary-container font-label-sm text-label-sm py-3 px-4 uppercase tracking-widest font-bold hover:bg-on-surface hover:border-on-surface hover:text-surface transition-colors duration-200">
+                            Commander
+                        </button>
+</div>
+</div>
+</article>
+<!-- Product Card 2 -->
+<article class="flex flex-col border border-surface-container-highest bg-surface hover:border-on-secondary transition-colors duration-300 group">
+<div class="relative w-full aspect-[3/4] bg-surface-container overflow-hidden">
+<img alt="T-shirt Logo Neon" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="An avant-garde still-life product image of a neon-accented graphic t-shirt. The t-shirt is laid completely flat on an absolute black surface, removing any sense of depth or natural draping. The graphic on the shirt features raw, unrefined modernist typography in stark white. A high-intensity electric orange light washes over one corner of the frame, creating a severe, sharp-edged gradient of illumination against the darkness. The aesthetic is purely brutalist and heavily digital." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXYijUGfzl1_wtFylZEcnF4_3jSGPRfKsM3HrSUf_Q7IUDnlMDSvBSvhSTSDunhAl7-jjB9L6ZGRH6Ymp9T-NhpE6ZulfAiuWL0JoMf1WcUvGS_8ytXm9vVPts-wfgsvQY9vad20kALmbhpXRqMaY0MZuwF43GGihgWiEDqAoHzqyQOImFqSMxjcZRTsFdOoniNOFuF5Qwbi6c_aMqb1tiqN4yT-sAFvymfM-rvUDMfDV-V1faayf2h6PVMgKpX0iz2gpFgxyDxUWb"/>
+</div>
+<div class="p-6 flex flex-col flex-grow justify-between gap-6 border-t border-surface-container-highest">
+<div>
+<h2 class="font-body-lg text-body-lg text-on-surface uppercase tracking-wide">T-shirt Logo Neon</h2>
+<p class="font-headline-md text-headline-md text-primary-container mt-2">45 €</p>
+</div>
+<div class="flex flex-col gap-3">
+<button class="w-full border-2 border-on-surface text-on-surface bg-transparent font-label-sm text-label-sm py-3 px-4 uppercase tracking-widest hover:bg-on-surface hover:text-surface transition-colors duration-200">
+                            + Panier
+                        </button>
+<button class="w-full border-2 border-primary-container bg-primary-container text-on-primary-container font-label-sm text-label-sm py-3 px-4 uppercase tracking-widest font-bold hover:bg-on-surface hover:border-on-surface hover:text-surface transition-colors duration-200">
+                            Commander
+                        </button>
+</div>
+</div>
+</article>
+<!-- Product Card 3 -->
+<article class="flex flex-col border border-surface-container-highest bg-surface hover:border-on-secondary transition-colors duration-300 group">
+<div class="relative w-full aspect-[3/4] bg-surface-container overflow-hidden">
+<img alt="Set Accessoires Brut" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="A high-end, conceptual product shot of brutalist minimalist accessories. Several heavy, matte-black metallic geometric shapes are arranged symmetrically on a dark, granular surface. There are no smooth curves; every edge is razor-sharp and deliberate. A singular beam of intense, cold white light cuts across the composition, highlighting the raw industrial finish of the metal. The scene is devoid of any organic elements, projecting a cold, uncompromising, and highly structured visual identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC18R6qC254WDb68tUM0yyQq23PtTsUC2oHqJwc2yRn-bagWot0sZjx5UTaBFhacUu7xkCydpasVgPFsHJij8-EZJIzGluXPhbCF8orEAu34ee6Q2WjDUaPKlaiCUOU939UpiBLBTFwcoXMx-ADoHEjgYint0owgdI0hHeyxpxKto97KBBbhRpmhRV_zWPpsj94AaOCemvhsWfArf_Iy8yT4q58Az33briJ8sPDrgvu0d6iQg28J5h0zfbudzrmhC5ntrPeKnv92Ydn"/>
+</div>
+<div class="p-6 flex flex-col flex-grow justify-between gap-6 border-t border-surface-container-highest">
+<div>
+<h2 class="font-body-lg text-body-lg text-on-surface uppercase tracking-wide">Set Accessoires Brut</h2>
+<p class="font-headline-md text-headline-md text-primary-container mt-2">85 €</p>
+</div>
+<div class="flex flex-col gap-3">
+<button class="w-full border-2 border-on-surface text-on-surface bg-transparent font-label-sm text-label-sm py-3 px-4 uppercase tracking-widest hover:bg-on-surface hover:text-surface transition-colors duration-200">
+                            + Panier
+                        </button>
+<button class="w-full border-2 border-primary-container bg-primary-container text-on-primary-container font-label-sm text-label-sm py-3 px-4 uppercase tracking-widest font-bold hover:bg-on-surface hover:border-on-surface hover:text-surface transition-colors duration-200">
+                            Commander
+                        </button>
+</div>
+</div>
+</article>
+<!-- Product Card 4 -->
+<article class="flex flex-col border border-surface-container-highest bg-surface hover:border-on-secondary transition-colors duration-300 group">
+<div class="relative w-full aspect-[3/4] bg-surface-container overflow-hidden">
+<img alt="Gilet Utilitaire Mono" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="A reductive, architectural fashion shot of a heavy-duty utilitarian vest. The vest is suspended in a void of deep charcoal grey, lit evenly to reveal thick, rigid fabrics and oversized, industrial hardware. The color palette is strictly monochromatic, consisting of varied shades of black and dark grey, with absolute white accents on the zippers. The composition is dead-center, emphasizing aggressive symmetry and a complete rejection of traditional, soft fashion aesthetics in favor of pure utility." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQ0KblSfnN9PD-NO19hUWUPVOm3Z1ChZEgMZB4_ufpC7pbMrggEYaq2Tjw_heETS-fP2B3aG3YsTb7yww8JwmbX-Zx9g-WRh4A7Dyn11tqB7bfsoHEQEdYteouQuYUXgJbScwLFGoIn4dva2tuJrXzum05dHMOxKokNQPaKgaFkfmzY8HkzJOBPZG6o9brv5-MG7oT2mBVXqUjNlXOg9cVVOBzkemHw_9ack8IE7NEaELKLFtxEByEQrZjiSHkUntMMmG423qrUOnQ"/>
+</div>
+<div class="p-6 flex flex-col flex-grow justify-between gap-6 border-t border-surface-container-highest">
+<div>
+<h2 class="font-body-lg text-body-lg text-on-surface uppercase tracking-wide">Gilet Utilitaire Mono</h2>
+<p class="font-headline-md text-headline-md text-primary-container mt-2">150 €</p>
+</div>
+<div class="flex flex-col gap-3">
+<button class="w-full border-2 border-on-surface text-on-surface bg-transparent font-label-sm text-label-sm py-3 px-4 uppercase tracking-widest hover:bg-on-surface hover:text-surface transition-colors duration-200">
+                            + Panier
+                        </button>
+<button class="w-full border-2 border-primary-container bg-primary-container text-on-primary-container font-label-sm text-label-sm py-3 px-4 uppercase tracking-widest font-bold hover:bg-on-surface hover:border-on-surface hover:text-surface transition-colors duration-200">
+                            Commander
+                        </button>
+</div>
+</div>
+</article>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest dark:bg-surface-container-lowest border-t border-on-secondary dark:border-on-secondary full-width flat no shadows mt-auto">
+<div class="flex flex-col md:flex-row justify-between items-center px-margin-desktop py-8 w-full max-w-container-max mx-auto gap-8">
+<div class="font-headline-md text-headline-md text-on-surface">
+                DIGITAL KIFF
+            </div>
+<ul class="flex flex-wrap gap-8 font-label-sm text-label-sm">
+<li class="">
+<a class="text-tertiary-container hover:text-on-surface opacity-80 hover:opacity-100 transition-opacity duration-200 uppercase tracking-widest" href="#">Privacy Policy</a>
+</li>
+<li class="">
+<a class="text-tertiary-container hover:text-on-surface opacity-80 hover:opacity-100 transition-opacity duration-200 uppercase tracking-widest" href="#">Terms of Service</a>
+</li>
+<li class="">
+<a class="text-tertiary-container hover:text-on-surface opacity-80 hover:opacity-100 transition-opacity duration-200 uppercase tracking-widest" href="#">Shipping</a>
+</li>
+<li class="">
+<a class="text-tertiary-container hover:text-on-surface opacity-80 hover:opacity-100 transition-opacity duration-200 uppercase tracking-widest" href="#">Instagram</a>
+</li>
+</ul>
+<div class="font-label-sm text-label-sm text-tertiary-container uppercase tracking-widest">
+                © 2024 DIGITAL KIFF. ALL RIGHTS RESERVED.
+            </div>
+</div>
+</footer>
+</body></html>
