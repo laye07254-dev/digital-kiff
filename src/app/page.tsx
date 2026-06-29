@@ -1,40 +1,37 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 
-const FEATURED_ITEMS = [
-  {
-    id: 101,
-    name: 'Sculpture Numérique',
-    price: '240€',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCcMatDyEX4-bKey4fjUuo35ZOvhVS0zTIlayposlXuZRtkrkArlBKfQ2xcUmKFdyboBm02bhOSJbwPYagZRMg_V5Tx4rmiZYugk_65yGbAi8B8JBjfJDm0XeO_r7ysUxll85KPkbcg4Ht_N5GCjgJsr0xCw5IYyvhJiTzLSkn3a5G1C5QEBTD_s4wBQnfPMJ2xzXNGGhtJDE2Cf-PfG8kYhkeT-B7kGWHFnSatmI0aOb1oijTX1ACu30gBmWUpe0VXUoFv0fwgHVOV',
-    tag: 'Nouveau',
-  },
-  {
-    id: 102,
-    name: 'Vase Brutaliste',
-    price: '180€',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCcMatDyEX4-bKey4fjUuo35ZOvhVS0zTIlayposlXuZRtkrkArlBKfQ2xcUmKFdyboBm02bhOSJbwPYagZRMg_V5Tx4rmiZYugk_65yGbAi8B8JBjfJDm0XeO_r7ysUxll85KPkbcg4Ht_N5GCjgJsr0xCw5IYyvhJiTzLSkn3a5G1C5QEBTD_s4wBQnfPMJ2xzXNGGhtJDE2Cf-PfG8kYhkeT-B7kGWHFnSatmI0aOb1oijTX1ACu30gBmWUpe0VXUoFv0fwgHVOV',
-    tag: null,
-  },
-  {
-    id: 103,
-    name: 'Lampe Structurelle',
-    price: '450€',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCcMatDyEX4-bKey4fjUuo35ZOvhVS0zTIlayposlXuZRtkrkArlBKfQ2xcUmKFdyboBm02bhOSJbwPYagZRMg_V5Tx4rmiZYugk_65yGbAi8B8JBjfJDm0XeO_r7ysUxll85KPkbcg4Ht_N5GCjgJsr0xCw5IYyvhJiTzLSkn3a5G1C5QEBTD_s4wBQnfPMJ2xzXNGGhtJDE2Cf-PfG8kYhkeT-B7kGWHFnSatmI0aOb1oijTX1ACu30gBmWUpe0VXUoFv0fwgHVOV',
-    tag: 'Édition Limitée',
-  },
-  {
-    id: 104,
-    name: 'Assise Monolithique',
-    price: '890€',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCcMatDyEX4-bKey4fjUuo35ZOvhVS0zTIlayposlXuZRtkrkArlBKfQ2xcUmKFdyboBm02bhOSJbwPYagZRMg_V5Tx4rmiZYugk_65yGbAi8B8JBjfJDm0XeO_r7ysUxll85KPkbcg4Ht_N5GCjgJsr0xCw5IYyvhJiTzLSkn3a5G1C5QEBTD_s4wBQnfPMJ2xzXNGGhtJDE2Cf-PfG8kYhkeT-B7kGWHFnSatmI0aOb1oijTX1ACu30gBmWUpe0VXUoFv0fwgHVOV',
-    tag: null,
-  },
-];
+interface PrintfulProduct {
+  id: number;
+  name: string;
+  thumbnail_url: string;
+}
 
 export default function Home() {
+  const [featuredProducts, setFeaturedProducts] = useState<PrintfulProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadFeatured() {
+      try {
+        const res = await fetch('/api/products');
+        const data = await res.json();
+        if (res.ok) {
+          const items: PrintfulProduct[] = data.result || data || [];
+          // Get first 4 products
+          setFeaturedProducts(items.slice(0, 4));
+        }
+      } catch (err) {
+        console.error('Failed to load featured products', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadFeatured();
+  }, []);
+
   return (
     <main style={styles.main}>
       {/* Hero */}
@@ -57,25 +54,39 @@ export default function Home() {
             </h2>
             <Link href="/shop" style={styles.viewAll}>VOIR TOUT</Link>
           </div>
-          <div style={styles.featuredGrid}>
-            {FEATURED_ITEMS.map(item => (
-              <article key={item.id} style={styles.featuredCard}>
-                <Link href={`/shop`} style={{ display: 'contents' }}>
-                  <div style={styles.featuredImgWrap}>
-                    <img src={item.image} alt={item.name} style={styles.featuredImg} />
-                    {item.tag && <span style={styles.featuredTag}>{item.tag}</span>}
-                  </div>
-                </Link>
-                <div style={styles.featuredCardBody}>
-                  <span style={styles.featuredName}>{item.name}</span>
-                  <div style={styles.featuredPriceRow}>
-                    <span style={styles.featuredPrice}>{item.price}</span>
-                    <span style={styles.featuredPlus}>+</span>
-                  </div>
+
+          {loading ? (
+            <div style={styles.loadingGrid}>
+              {[...Array(4)].map((_, i) => (
+                <div key={i} style={styles.skeletonCard}>
+                  <div style={styles.skeletonImage} />
+                  <div style={styles.skeletonBody} />
                 </div>
-              </article>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : featuredProducts.length > 0 ? (
+            <div style={styles.featuredGrid}>
+              {featuredProducts.map(item => (
+                <article key={item.id} style={styles.featuredCard}>
+                  <Link href={`/product/${item.id}`} style={{ display: 'contents' }}>
+                    <div style={styles.featuredImgWrap}>
+                      <img src={item.thumbnail_url || '/placeholder.png'} alt={item.name} style={styles.featuredImg} />
+                    </div>
+                  </Link>
+                  <div style={styles.featuredCardBody}>
+                    <span style={styles.featuredName}>{item.name}</span>
+                    <Link href={`/product/${item.id}`} style={styles.featuredPlus}>
+                      →
+                    </Link>
+                  </div>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div style={styles.emptyState}>
+              <p>Aucun produit disponible pour le moment.</p>
+            </div>
+          )}
         </div>
       </section>
 
@@ -219,48 +230,28 @@ const styles: Record<string, React.CSSProperties> = {
     filter: 'grayscale(100%)',
     transition: 'filter 0.5s ease',
   },
-  featuredTag: {
-    position: 'absolute',
-    top: '12px',
-    left: '12px',
-    backgroundColor: 'var(--accent)',
-    color: '#0A0A0A',
-    fontFamily: 'var(--font-sans)',
-    fontSize: '10px',
-    fontWeight: 700,
-    textTransform: 'uppercase',
-    letterSpacing: '0.1em',
-    padding: '4px 8px',
-  },
   featuredCardBody: {
     padding: '20px',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
     borderTop: '1px solid #353534',
+    gap: '12px',
   },
   featuredName: {
     fontFamily: 'var(--font-sans)',
     fontSize: '14px',
     color: 'var(--on-surface)',
-  },
-  featuredPriceRow: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '16px',
-  },
-  featuredPrice: {
-    fontFamily: 'var(--font-display)',
-    fontSize: '14px',
-    fontWeight: 700,
-    color: 'var(--on-surface)',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   },
   featuredPlus: {
     fontFamily: 'var(--font-display)',
     fontSize: '18px',
     fontWeight: 700,
     color: 'var(--on-surface)',
-    cursor: 'pointer',
+    textDecoration: 'none',
   },
   philosophy: {
     padding: '128px 0',
@@ -314,5 +305,31 @@ const styles: Record<string, React.CSSProperties> = {
     textDecoration: 'none',
     transition: 'all 0.3s ease',
     width: 'fit-content',
+  },
+  loadingGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(4, 1fr)',
+    gap: '32px',
+  },
+  skeletonCard: {
+    border: '1px solid #1A1A1A',
+    backgroundColor: '#131313',
+    height: '350px',
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  skeletonImage: {
+    flexGrow: 1,
+    backgroundColor: '#1E1E1E',
+  },
+  skeletonBody: {
+    height: '60px',
+    backgroundColor: '#181818',
+  },
+  emptyState: {
+    padding: '48px',
+    textAlign: 'center',
+    color: 'var(--tertiary-container)',
+    fontFamily: 'var(--font-sans)',
   },
 };

@@ -7,64 +7,158 @@ interface ProductPageProps {
   params: Promise<{ id: string }>;
 }
 
-const SIZES = ['S', 'M', 'L', 'XL'];
+interface PrintfulFile {
+  type: string;
+  preview_url?: string;
+  url?: string;
+  thumbnail_url?: string;
+}
 
-// Placeholder product data - will be replaced by Printful API
-const PRODUCT = {
-  id: 1,
-  name: 'VESTE STRUCTURE 01',
-  price: '120 €',
-  description: 'Une architecture textile conçue pour l\'environnement urbain. Lignes pures, matériaux techniques, zéro compromis.',
-  images: [
-    {
-      src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDCm4CJHAEbQD-V_dugXWIAnEKw4_5cicvL0_KufaiSppc18WM1L4UnTzQzLF9Q1F3ZfweLcGrg1H923kUdHY6bYY91wldlsVsWhW-JtNb0W0btjlj3cZh2Q4t5thj8PzVkefH6ktlb-ztG57B8dfzmosbiROvcvNad_lfBXRYLjbanX0lyDQisAjcW7xRwMNM4LXsO91yevq7pE2_7CbhB7fSI2Tz5reaL9BwIE8R95dw93-EV7UxiHYDfHH_AxI1Em2NkrkVG0-QM',
-      alt: 'Main Product Image',
-    },
-    {
-      src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCQ5-eEGh2KObG23BEG8TnoD8RtGzWVEg8ABJWk4bCzP00jL216Y-VIXP24DtMQRDEk5PlOgdGrbxeoTZv5heV4EDgj5iOtBac3glyzgmkCrsUZk5-0tHdlnjgxtDpDE1sU08k2zTciU7EgsdzrPyJw2KoHrJmT02XngXS96OWYNqpbFUeugHtorYO6bvgFMUb9_VRZFLPgqCZq6OR9wpkF7KEC0OTCJbY0OQDxRNJHpyAppNqahy1Z3eEExZnXsdoY7skq0efCNLfp',
-      alt: 'Thumbnail 1',
-    },
-    {
-      src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAMH09B8Z6vkZGQpC2FaHeGN3Z4rNs_-hAWk_Z3usjm_V2HWtsUrjHF0kR2IBtri9Mq3Pi69DTVuJnzbmTfGntCqIBIHeJZ_2TL1mgH9B05RSrsGDlVv0rql2Z4e302eTBNhz5D5EWDPk24WJo5PeLhSmQNkqwkNsqq3_QM5QtEQaNEhdqb0ZfuivzUaEDjyqwtq9WaDahZg_S_FDCdMpklRMJ8-pVPEBUj5Vfx0tXBF1wwnIRTzA9L0W2v026q-7NnT91UYR43pyzo',
-      alt: 'Thumbnail 2',
-    },
-    {
-      src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCYBUvz8KCUXfkB0BLM7xXfX7_lgwu-MVMoWTtnhX6Qwxtu6Bp7_rowuZ7OvGWZ-bjitvZ1aEGFr1aoNg_l3GyfhFekPwRoxrzJZdXpGZmMH6ZidXv3Vc1-iSQyApKqmMeGEI5IPlvhst2A1QNuedHjENScgADjxOZWFX7padqqmw-24nSVMTGDwG1xTgspbuxXyC6I-XjZqvgVj6xObxmjw9XWGU654UdJs2Zl5k68iuMaFLEXhxR_MumSLEnMA8lPoWdFmWyO0zMu',
-      alt: 'Thumbnail 3',
-    },
-  ],
-};
+interface PrintfulVariant {
+  id: number;
+  variant_id: number;
+  name: string;
+  retail_price: string;
+  size: string;
+  color?: string;
+  files: PrintfulFile[];
+  product?: {
+    image?: string;
+  };
+}
+
+interface PrintfulProductDetail {
+  sync_product: {
+    id: number;
+    name: string;
+    thumbnail_url: string;
+  };
+  sync_variants: PrintfulVariant[];
+}
 
 export default function ProductDetail({ params }: ProductPageProps) {
   const router = useRouter();
   const { id } = use(params);
+  
+  const [productDetail, setProductDetail] = useState<PrintfulProductDetail | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const [activeImage, setActiveImage] = useState(0);
-  const [selectedSize, setSelectedSize] = useState('M');
+  const [selectedSize, setSelectedSize] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [adding, setAdding] = useState(false);
 
+  useEffect(() => {
+    async function loadProduct() {
+      try {
+        setLoading(true);
+        const res = await fetch(`/api/products/${id}`);
+        const data = await res.json();
+        
+        if (!res.ok) {
+          throw new Error(data.error || 'Erreur lors du chargement du produit');
+        }
+
+        const detail: PrintfulProductDetail = data.result || data;
+        setProductDetail(detail);
+
+        // Pre-select first size
+        if (detail.sync_variants && detail.sync_variants.length > 0) {
+          setSelectedSize(detail.sync_variants[0].size);
+        }
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadProduct();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <main style={styles.main}>
+        <div style={styles.stateBox}>
+          <div style={styles.spinner} />
+          <p style={styles.stateText}>Chargement des détails du produit...</p>
+        </div>
+      </main>
+    );
+  }
+
+  if (error || !productDetail) {
+    return (
+      <main style={styles.main}>
+        <div style={styles.stateBox}>
+          <p style={{ ...styles.stateText, color: 'var(--primary)' }}>
+            Erreur : {error || 'Produit introuvable'}
+          </p>
+          <button onClick={() => window.location.reload()} style={styles.retryBtn}>
+            Réessayer
+          </button>
+        </div>
+      </main>
+    );
+  }
+
+  const { sync_product, sync_variants } = productDetail;
+
+  // Extract all unique sizes available
+  const sizes = Array.from(new Set(sync_variants.map(v => v.size)));
+
+  // Find currently selected variant based on size
+  const currentVariant = sync_variants.find(v => v.size === selectedSize) || sync_variants[0];
+
+  // Extract all images (mockups / previews)
+  const images: string[] = [];
+  
+  // Add main thumbnail first
+  if (sync_product.thumbnail_url) {
+    images.push(sync_product.thumbnail_url);
+  }
+
+  // Add previews from variants if any
+  sync_variants.forEach(variant => {
+    const previewFile = variant.files.find(f => f.type === 'preview');
+    if (previewFile?.preview_url && !images.includes(previewFile.preview_url)) {
+      images.push(previewFile.preview_url);
+    } else if (variant.product?.image && !images.includes(variant.product.image)) {
+      images.push(variant.product.image);
+    }
+  });
+
+  // Unique list of image strings
+  const uniqueImages = Array.from(new Set(images.filter(Boolean)));
+
   const handleAddToCart = () => {
+    if (!currentVariant) return;
+    
     setAdding(true);
     const cartItem = {
-      product_id: PRODUCT.id,
-      product_name: PRODUCT.name,
-      variant_id: 1,
-      sync_variant_id: 1,
-      size: selectedSize,
-      color: 'Noir',
-      price: 120,
+      product_id: sync_product.id,
+      product_name: sync_product.name,
+      variant_id: currentVariant.variant_id, // Base catalog variant ID
+      sync_variant_id: currentVariant.id,    // Store synced variant ID
+      size: currentVariant.size,
+      color: currentVariant.color || 'Unique',
+      price: parseFloat(currentVariant.retail_price) || 0,
       quantity: quantity,
-      thumbnail: PRODUCT.images[0].src,
+      thumbnail: currentVariant.files.find(f => f.type === 'preview')?.preview_url || uniqueImages[0] || sync_product.thumbnail_url,
     };
+
     const currentCart = JSON.parse(localStorage.getItem('dk_cart') || '[]');
     const existingIndex = currentCart.findIndex((item: any) => item.sync_variant_id === cartItem.sync_variant_id);
+    
     if (existingIndex > -1) {
       currentCart[existingIndex].quantity += quantity;
     } else {
       currentCart.push(cartItem);
     }
+    
     localStorage.setItem('dk_cart', JSON.stringify(currentCart));
     window.dispatchEvent(new Event('dk_cart_updated'));
+    
     setTimeout(() => {
       setAdding(false);
       window.dispatchEvent(new Event('dk_open_cart'));
@@ -78,6 +172,9 @@ export default function ProductDetail({ params }: ProductPageProps) {
     }, 700);
   };
 
+  // Safe image display
+  const mainImageSrc = uniqueImages[activeImage] || sync_product.thumbnail_url || '/placeholder.png';
+
   return (
     <main style={styles.main}>
       <div className="container" style={styles.grid}>
@@ -85,52 +182,58 @@ export default function ProductDetail({ params }: ProductPageProps) {
         <div style={styles.gallery}>
           <div style={styles.mainImage}>
             <img
-              src={PRODUCT.images[activeImage].src}
-              alt={PRODUCT.images[activeImage].alt}
+              src={mainImageSrc}
+              alt={sync_product.name}
               style={styles.mainImg}
             />
             <div style={styles.imageBorder}></div>
           </div>
-          <div style={styles.thumbnails}>
-            {PRODUCT.images.map((img, idx) => (
-              <div
-                key={idx}
-                onClick={() => setActiveImage(idx)}
-                style={{
-                  ...styles.thumb,
-                  ...(idx === activeImage ? styles.thumbActive : {}),
-                }}
-              >
-                <img src={img.src} alt={img.alt} style={styles.thumbImg} />
-              </div>
-            ))}
-          </div>
+          {uniqueImages.length > 1 && (
+            <div style={styles.thumbnails}>
+              {uniqueImages.map((imgSrc, idx) => (
+                <div
+                  key={idx}
+                  onClick={() => setActiveImage(idx)}
+                  style={{
+                    ...styles.thumb,
+                    ...(idx === activeImage ? styles.thumbActive : {}),
+                  }}
+                >
+                  <img src={imgSrc} alt={`${sync_product.name} thumbnail ${idx}`} style={styles.thumbImg} />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Right: Details */}
         <div style={styles.details}>
-          <h1 style={styles.productTitle}>{PRODUCT.name}</h1>
-          <p style={styles.price}>{PRODUCT.price}</p>
+          <h1 style={styles.productTitle}>{sync_product.name}</h1>
+          <p style={styles.price}>
+            {currentVariant ? `${parseFloat(currentVariant.retail_price).toFixed(2)} €` : 'N/A'}
+          </p>
           <div style={styles.divider}></div>
 
           {/* Size Selector */}
-          <div style={styles.optionSection}>
-            <label style={styles.optionLabel}>Taille</label>
-            <div style={styles.sizeGrid}>
-              {SIZES.map(size => (
-                <button
-                  key={size}
-                  onClick={() => setSelectedSize(size)}
-                  style={{
-                    ...styles.sizeBtn,
-                    ...(selectedSize === size ? styles.sizeBtnActive : {}),
-                  }}
-                >
-                  {size}
-                </button>
-              ))}
+          {sizes.length > 0 && (
+            <div style={styles.optionSection}>
+              <label style={styles.optionLabel}>Taille</label>
+              <div style={styles.sizeGrid}>
+                {sizes.map(size => (
+                  <button
+                    key={size}
+                    onClick={() => setSelectedSize(size)}
+                    style={{
+                      ...styles.sizeBtn,
+                      ...(selectedSize === size ? styles.sizeBtnActive : {}),
+                    }}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Quantity Selector */}
           <div style={styles.optionSection}>
@@ -175,9 +278,11 @@ export default function ProductDetail({ params }: ProductPageProps) {
             </button>
           </div>
 
-          {/* Description */}
+          {/* Description / Info */}
           <div style={styles.descriptionSection}>
-            <p style={styles.description}>{PRODUCT.description}</p>
+            <p style={styles.description}>
+              Une création exclusive de DIGITAL KIFF. Design soigné et impression haute définition à la demande.
+            </p>
           </div>
         </div>
       </div>
@@ -221,8 +326,8 @@ const styles: Record<string, React.CSSProperties> = {
   },
   thumbnails: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(3, 1fr)',
-    gap: '24px',
+    gridTemplateColumns: 'repeat(4, 1fr)',
+    gap: '16px',
   },
   thumb: {
     aspectRatio: '1',
@@ -315,6 +420,7 @@ const styles: Record<string, React.CSSProperties> = {
     border: '1px solid #1A1A1A',
     height: '48px',
     alignItems: 'center',
+    alignSelf: 'flex-start',
   },
   qtyBtn: {
     width: '48px',
@@ -379,5 +485,41 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '16px',
     color: '#666666',
     lineHeight: '1.6',
+    margin: 0,
+  },
+  stateBox: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '24px',
+    minHeight: '400px',
+  },
+  stateText: {
+    fontFamily: 'var(--font-sans)',
+    fontSize: '16px',
+    color: 'var(--tertiary-container)',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em',
+  },
+  spinner: {
+    width: '40px',
+    height: '40px',
+    border: '3px solid #1A1A1A',
+    borderTop: '3px solid var(--primary)',
+    borderRadius: '50%',
+    animation: 'spin 1s linear infinite',
+  },
+  retryBtn: {
+    border: '2px solid var(--primary)',
+    color: 'var(--primary)',
+    backgroundColor: 'transparent',
+    fontFamily: 'var(--font-sans)',
+    fontSize: '12px',
+    fontWeight: 600,
+    textTransform: 'uppercase',
+    letterSpacing: '0.1em',
+    padding: '12px 32px',
+    cursor: 'pointer',
   },
 };
