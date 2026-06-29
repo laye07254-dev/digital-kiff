@@ -110,23 +110,18 @@ export default function ProductDetail({ params }: ProductPageProps) {
   // Find currently selected variant based on size
   const currentVariant = sync_variants.find(v => v.size === selectedSize) || sync_variants[0];
 
-  // Extract all images (mockups / previews)
+  // Extract all images — use catalog product images (clean, no placeholder design)
   const images: string[] = [];
-  
-  // Add previews from variants first (which contain the printed mockup design)
+
+  // Use clean catalog product images from each variant (no design overlay)
   sync_variants.forEach(variant => {
-    const previewFile = variant.files.find(f => f.type === 'preview');
-    if (previewFile?.preview_url && !images.includes(previewFile.preview_url)) {
-      images.push(previewFile.preview_url);
-    } else if (variant.product?.image && !images.includes(variant.product.image)) {
+    if (variant.product?.image && !images.includes(variant.product.image)) {
       images.push(variant.product.image);
     }
   });
 
-  // Add main thumbnail as fallback at the end if it's not duplicate or the broken poster thumbnail
-  if (sync_product.thumbnail_url && 
-      !sync_product.thumbnail_url.includes('3b2e90c9f4a065cbcfb1e28c0eb31023') && 
-      !images.includes(sync_product.thumbnail_url)) {
+  // Fallback: use the product thumbnail if no catalog images found
+  if (images.length === 0 && sync_product.thumbnail_url) {
     images.push(sync_product.thumbnail_url);
   }
 
