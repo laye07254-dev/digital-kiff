@@ -113,12 +113,7 @@ export default function ProductDetail({ params }: ProductPageProps) {
   // Extract all images (mockups / previews)
   const images: string[] = [];
   
-  // Add main thumbnail first
-  if (sync_product.thumbnail_url) {
-    images.push(sync_product.thumbnail_url);
-  }
-
-  // Add previews from variants if any
+  // Add previews from variants first (which contain the printed mockup design)
   sync_variants.forEach(variant => {
     const previewFile = variant.files.find(f => f.type === 'preview');
     if (previewFile?.preview_url && !images.includes(previewFile.preview_url)) {
@@ -127,6 +122,13 @@ export default function ProductDetail({ params }: ProductPageProps) {
       images.push(variant.product.image);
     }
   });
+
+  // Add main thumbnail as fallback at the end if it's not duplicate or the broken poster thumbnail
+  if (sync_product.thumbnail_url && 
+      !sync_product.thumbnail_url.includes('3b2e90c9f4a065cbcfb1e28c0eb31023') && 
+      !images.includes(sync_product.thumbnail_url)) {
+    images.push(sync_product.thumbnail_url);
+  }
 
   // Unique list of image strings
   const uniqueImages = Array.from(new Set(images.filter(Boolean)));
