@@ -110,17 +110,33 @@ export default function ProductDetail({ params }: ProductPageProps) {
   // Find currently selected variant based on size
   const currentVariant = sync_variants.find(v => v.size === selectedSize) || sync_variants[0];
 
-  // Extract all images — use catalog product images (clean, no placeholder design)
+  // Detect if this product has a real custom design:
+  // Products with real designs have a thumbnail from /files/
+  // Products with placeholders have /o/upload/product-catalog-img/
+  const hasRealDesign = sync_product.thumbnail_url &&
+    !sync_product.thumbnail_url.includes('/o/upload/product-catalog-img/');
+
+  // Extract images based on whether the product has a real design
   const images: string[] = [];
 
-  // Use clean catalog product images from each variant (no design overlay)
+  if (hasRealDesign) {
+    // Use preview mockup (shows the real design on the product)
+    sync_variants.forEach(variant => {
+      const previewFile = variant.files.find(f => f.type === 'preview');
+      if (previewFile?.preview_url && !images.includes(previewFile.preview_url)) {
+        images.push(previewFile.preview_url);
+      }
+    });
+  }
+
+  // Always add clean catalog images as secondary/fallback
   sync_variants.forEach(variant => {
     if (variant.product?.image && !images.includes(variant.product.image)) {
       images.push(variant.product.image);
     }
   });
 
-  // Fallback: use the product thumbnail if no catalog images found
+  // Last fallback: product thumbnail
   if (images.length === 0 && sync_product.thumbnail_url) {
     images.push(sync_product.thumbnail_url);
   }

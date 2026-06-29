@@ -26,12 +26,16 @@ export async function GET() {
       return NextResponse.json({ error: data.error || 'Failed to fetch products' }, { status: response.status });
     }
 
-    // Use the catalog product image (clean mockup without placeholder design)
-    // by fetching the variant's catalog product image instead of the preview
     const products = data.result || [];
 
     const detailedProducts = await Promise.all(
       products.map(async (p: any) => {
+        // Detect if this product has a real custom design preview:
+        // Products with real designs have a thumbnail starting with /files/
+        // Products we created with a placeholder have /o/upload/product-catalog-img/
+        const hasRealDesign = p.thumbnail_url && 
+          !p.thumbnail_url.includes('/o/upload/product-catalog-img/');
+
         try {
           const detailRes = await fetch(`https://api.printful.com/store/products/${p.id}`, {
             headers,
@@ -41,7 +45,16 @@ export async function GET() {
             const variants = detailData.result?.sync_variants || [];
             if (variants.length > 0) {
               const firstVariant = variants[0];
-              // Use the catalog product image (clean, no design overlay)
+
+              if (hasRealDesign) {
+                // Use the preview mockup image (shows the real design)
+                const previewFile = firstVariant.files?.find((f: any) => f.type === 'preview');
+                if (previewFile?.preview_url) {
+                  return { ...p, thumbnail_url: previewFile.preview_url };
+                }
+              }
+
+              // For placeholder-design products: use clean catalog image
               if (firstVariant.product?.image) {
                 return { ...p, thumbnail_url: firstVariant.product.image };
               }
@@ -50,7 +63,7 @@ export async function GET() {
         } catch (e) {
           console.error(`Failed to fetch details for product ${p.id}`, e);
         }
-        // Fallback to the basic thumbnail
+
         return p;
       })
     );
