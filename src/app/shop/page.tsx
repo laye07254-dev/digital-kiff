@@ -1,72 +1,40 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 
-interface Product {
+interface PrintfulProduct {
   id: number;
   name: string;
-  price: string;
-  image: string;
-  alt: string;
-  category: string;
+  thumbnail_url: string;
+  synced: number;
 }
 
-const PRODUCTS: Product[] = [
-  {
-    id: 1,
-    name: 'Veste Structure 01',
-    price: '120 €',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC6TWHxClh__sEvRsTHdbh1cMsqJaapstLQim1k1bIesJzqx0wltHCMjF-_1mZOTbwneVLlY74ML4IqrSLyhobPsRYaGNI8OROtzdxL6nYQKOd6oPobhvTvzmVE_IrUPFI12mhUXVodNfvta4yLeZS_ETFqtr9WSkOx3VV-HDn46rHL0JOWmI4VuGLSDFcQ8L1EnZF9YLW7wB43VzYCSHPUYk-q7BQi0nxloMpAfycMdf2UPiLvdfdyBhxTrZETzFkigzPrzStby05u',
-    alt: 'Veste Structure 01',
-    category: 'vestes',
-  },
-  {
-    id: 2,
-    name: 'T-shirt Logo Neon',
-    price: '45 €',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDXYijUGfzl1_wtFylZEcnF4_3jSGPRfKsM3HrSUf_Q7IUDnlMDSvBSvhSTSDunhAl7-jjB9L6ZGRH6Ymp9T-NhpE6ZulfAiuWL0JoMf1WcUvGS_8ytXm9vVPts-wfgsvQY9vad20kALmbhpXRqMaY0MZuwF43GGihgWiEDqAoHzqyQOImFqSMxjcZRTsFdOoniNOFuF5Qwbi6c_aMqb1tiqN4yT-sAFvymfM-rvUDMfDV-V1faayf2h6PVMgKpX0iz2gpFgxyDxUWb',
-    alt: 'T-shirt Logo Neon',
-    category: 't-shirts',
-  },
-  {
-    id: 3,
-    name: 'Set Accessoires Brut',
-    price: '85 €',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC18R6qC254WDb68tUM0yyQq23PtTsUC2oHqJwc2yRn-bagWot0sZjx5UTaBFhacUu7xkCydpasVgPFsHJij8-EZJIzGluXPhbCF8orEAu34ee6Q2WjDUaPKlaiCUOU939UpiBLBTFwcoXMx-ADoHEjgYint0owgdI0hHeyxpxKto97KBBbhRpmhRV_zWPpsj94AaOCemvhsWfArf_Iy8yT4q58Az33briJ8sPDrgvu0d6iQg28J5h0zfbudzrmhC5ntrPeKnv92Ydn',
-    alt: 'Set Accessoires Brut',
-    category: 'accessoires',
-  },
-  {
-    id: 4,
-    name: 'Gilet Utilitaire Mono',
-    price: '150 €',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAQ0KblSfnN9PD-NO19hUWUPVOm3Z1ChZEgMZB4_ufpC7pbMrggEYaq2Tjw_heETS-fP2B3aG3YsTb7yww8JwmbX-Zx9g-WRh4A7Dyn11tqB7bfsoHEQEdYteouQuYUXgJbScwLFGoIn4dva2tuJrXzum05dHMOxKokNQPaKgaFkfmzY8HkzJOBPZG6o9brv5-MG7oT2mBVXqUjNlXOg9cVVOBzkemHw_9ack8IE7NEaELKLFtxEByEQrZjiSHkUntMMmG423qrUOnQ',
-    alt: 'Gilet Utilitaire Mono',
-    category: 'vestes',
-  },
-];
-
-const CATEGORIES = [
-  { id: 'all', name: 'Tout' },
-  { id: 'vestes', name: 'Vestes' },
-  { id: 't-shirts', name: 'T-shirts' },
-  { id: 'accessoires', name: 'Accessoires' },
-];
-
 export default function Shop() {
-  const [activeCategory, setActiveCategory] = useState('all');
+  const [products, setProducts] = useState<PrintfulProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const filtered = activeCategory === 'all'
-    ? PRODUCTS
-    : PRODUCTS.filter(p => p.category === activeCategory);
-
-  const handleAddToCart = (e: React.MouseEvent, product: Product) => {
-    e.preventDefault();
-    e.stopPropagation();
-    // Quick add placeholder - would redirect to product page for variant selection
-    window.location.href = `/product/${product.id}`;
-  };
+  useEffect(() => {
+    async function loadProducts() {
+      try {
+        setLoading(true);
+        const res = await fetch('/api/products');
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || 'Erreur chargement produits');
+        }
+        // Printful v1 returns { result: [...] }
+        const items: PrintfulProduct[] = data.result || data || [];
+        setProducts(items);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadProducts();
+  }, []);
 
   return (
     <main style={styles.main}>
@@ -83,56 +51,67 @@ export default function Shop() {
             </span>
             <h1 style={styles.title}>BOUTIQUE</h1>
           </div>
-          <nav style={styles.filterNav}>
-            {CATEGORIES.map(cat => (
-              <button
-                key={cat.id}
-                onClick={() => setActiveCategory(cat.id)}
-                style={{
-                  ...styles.filterBtn,
-                  ...(activeCategory === cat.id ? styles.filterBtnActive : {}),
-                }}
-              >
-                {cat.name}
-              </button>
-            ))}
-          </nav>
+          <p style={styles.subtitle}>
+            {loading ? 'Chargement du catalogue...' : error ? '' : `${products.length} pièce${products.length !== 1 ? 's' : ''} disponible${products.length !== 1 ? 's' : ''}`}
+          </p>
         </div>
       </header>
 
       {/* Product Grid */}
       <section className="container" style={styles.gridSection}>
-        <div style={styles.grid}>
-          {filtered.map(product => (
-            <article key={product.id} style={styles.card}>
-              <Link href={`/product/${product.id}`} style={{ display: 'contents' }}>
-                <div style={styles.imageWrapper}>
-                  <img
-                    src={product.image}
-                    alt={product.alt}
-                    style={styles.image}
-                    loading="lazy"
-                  />
+        {loading && (
+          <div style={styles.stateBox}>
+            <div style={styles.spinner} />
+            <p style={styles.stateText}>Chargement des produits...</p>
+          </div>
+        )}
+
+        {!loading && error && (
+          <div style={styles.stateBox}>
+            <p style={{ ...styles.stateText, color: 'var(--primary)' }}>
+              Erreur : {error}
+            </p>
+            <button onClick={() => window.location.reload()} style={styles.retryBtn}>
+              Réessayer
+            </button>
+          </div>
+        )}
+
+        {!loading && !error && products.length === 0 && (
+          <div style={styles.stateBox}>
+            <p style={styles.stateText}>Aucun produit trouvé dans le catalogue.</p>
+          </div>
+        )}
+
+        {!loading && !error && products.length > 0 && (
+          <div style={styles.grid}>
+            {products.map(product => (
+              <article key={product.id} style={styles.card}>
+                <Link href={`/product/${product.id}`} style={{ display: 'contents' }}>
+                  <div style={styles.imageWrapper}>
+                    <img
+                      src={product.thumbnail_url || '/placeholder.png'}
+                      alt={product.name}
+                      style={styles.image}
+                      loading="lazy"
+                    />
+                  </div>
+                </Link>
+                <div style={styles.cardBody}>
+                  <h2 style={styles.productName}>{product.name}</h2>
+                  <div style={styles.actions}>
+                    <Link href={`/product/${product.id}`} style={styles.btnSecondary}>
+                      Voir le produit
+                    </Link>
+                    <Link href={`/product/${product.id}`} style={styles.btnPrimary}>
+                      Commander
+                    </Link>
+                  </div>
                 </div>
-              </Link>
-              <div style={styles.cardBody}>
-                <h2 style={styles.productName}>{product.name}</h2>
-                <p style={styles.price}>{product.price}</p>
-                <div style={styles.actions}>
-                  <button
-                    onClick={(e) => handleAddToCart(e, product)}
-                    style={styles.btnSecondary}
-                  >
-                    + Panier
-                  </button>
-                  <Link href={`/product/${product.id}`} style={styles.btnPrimary}>
-                    Commander
-                  </Link>
-                </div>
-              </div>
-            </article>
-          ))}
-        </div>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
     </main>
   );
@@ -151,7 +130,7 @@ const styles: Record<string, React.CSSProperties> = {
   subHeaderInner: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '32px',
+    gap: '16px',
     paddingTop: '48px',
     paddingBottom: '48px',
   },
@@ -174,28 +153,13 @@ const styles: Record<string, React.CSSProperties> = {
     lineHeight: '72px',
     margin: 0,
   },
-  filterNav: {
-    display: 'flex',
-    gap: '32px',
-    flexWrap: 'wrap',
-  },
-  filterBtn: {
-    fontFamily: 'var(--font-display)',
+  subtitle: {
+    fontFamily: 'var(--font-sans)',
     fontSize: '14px',
-    fontWeight: 700,
+    color: 'var(--tertiary-container)',
     textTransform: 'uppercase',
     letterSpacing: '0.1em',
-    color: 'var(--tertiary-container)',
-    background: 'none',
-    border: 'none',
-    borderBottom: '2px solid transparent',
-    paddingBottom: '8px',
-    cursor: 'pointer',
-    transition: 'all 0.3s ease',
-  },
-  filterBtnActive: {
-    color: 'var(--on-surface)',
-    borderBottom: '2px solid var(--primary)',
+    margin: 0,
   },
   gridSection: {
     paddingTop: '96px',
@@ -243,14 +207,7 @@ const styles: Record<string, React.CSSProperties> = {
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
     lineHeight: '28px',
-  },
-  price: {
-    fontFamily: 'var(--font-display)',
-    fontSize: '32px',
-    fontWeight: 700,
-    color: 'var(--primary-container)',
-    lineHeight: '40px',
-    letterSpacing: '-0.01em',
+    margin: 0,
   },
   actions: {
     display: 'flex',
@@ -270,6 +227,11 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '12px 24px',
     cursor: 'pointer',
     transition: 'all 0.2s ease',
+    textDecoration: 'none',
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center',
   },
   btnPrimary: {
     width: '100%',
@@ -289,5 +251,40 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     justifyContent: 'center',
     textAlign: 'center',
+  },
+  stateBox: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '24px',
+    minHeight: '300px',
+  },
+  stateText: {
+    fontFamily: 'var(--font-sans)',
+    fontSize: '16px',
+    color: 'var(--tertiary-container)',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em',
+  },
+  spinner: {
+    width: '40px',
+    height: '40px',
+    border: '3px solid #1A1A1A',
+    borderTop: '3px solid var(--primary)',
+    borderRadius: '50%',
+    animation: 'spin 1s linear infinite',
+  },
+  retryBtn: {
+    border: '2px solid var(--primary)',
+    color: 'var(--primary)',
+    backgroundColor: 'transparent',
+    fontFamily: 'var(--font-sans)',
+    fontSize: '12px',
+    fontWeight: 600,
+    textTransform: 'uppercase',
+    letterSpacing: '0.1em',
+    padding: '12px 32px',
+    cursor: 'pointer',
   },
 };
