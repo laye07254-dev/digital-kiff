@@ -187,8 +187,8 @@ const styles: Record<string, React.CSSProperties> = {
     width: '100%',
     height: '100%',
     objectFit: 'cover',
-    filter: 'grayscale(100%)',
-    transition: 'filter 0.5s ease',
+    objectPosition: 'center top',
+    transition: 'transform 0.5s ease',
   },
   cardBody: {
     padding: '24px',
