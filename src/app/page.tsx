@@ -228,7 +228,6 @@ const styles: Record<string, React.CSSProperties> = {
     height: '100%',
     objectFit: 'cover',
     transition: 'filter 0.5s ease',
-    transition: 'filter 0.5s ease',
   },
   featuredCardBody: {
     padding: '20px',
