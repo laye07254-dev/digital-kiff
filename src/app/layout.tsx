@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import CartDrawer from "@/components/CartDrawer";
 import Footer from "@/components/Footer";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/react";
 
 export const metadata: Metadata = {
   title: "Digital Kiff — Studio de Design & Objets",
@@ -22,6 +23,7 @@ export default function RootLayout({
         <CartDrawer />
         {children}
         <Footer />
+        <Analytics />
 
         {/* Google Analytics */}
         <Script
